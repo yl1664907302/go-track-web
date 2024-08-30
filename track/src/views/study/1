@@ -1,0 +1,2 @@
+{{ if eq .Status 'firing' }}## <font color='#FF0000'>【报警中】服务器{{ .Labels.instance }}</font>\n\n{{ else if eq .Status 'resolved' }}## <font color='#20B2AA'>【已恢复】服务{{ .Labels.instance }}</font>\n\n{{ else }}## 标题：信息通知\n\n{{ end }}===================\n\n**告警规则**：{{ .Labels.alertname }}\n\n**告警级别**：{{ .Labels.severity }}\n\n**主机名称**：{{ .Labels.instance }}\n\n**告警详情**：{{ .Annotations.description }}\n\n**告警状态**：{{ .Status }}\n\n**触发时间**：{{ .StartsAt }}\n\n{{ if eq .Status 'resolved' }}\n\n**恢复时间**：{{ .EndsAt }}\n\n{{ end }}**规则详情**：[Prometheus控制台]({{ .GeneratorURL }})
+
