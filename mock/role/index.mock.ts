@@ -62,6 +62,26 @@ const adminList = [
         }
       }
     ]
+  },
+  {
+    path: '/start',
+    component: '#',
+    redirect: '/start/first',
+    name: 'Start',
+    meta: {
+      title: 'router.start',
+      icon: 'carbon:skill-level-advanced'
+    },
+    children: [
+      {
+        path: 'first',
+        name: 'First',
+        component: 'views/start/index.vue',
+        meta: {
+          title: 'router.first'
+        }
+      }
+    ]
   }
 ]
 
@@ -71,7 +91,9 @@ const testList: string[] = [
   '/level/menu1/menu1-1',
   '/level/menu1/menu1-1/menu1-1-1',
   '/level/menu1/menu1-2',
-  '/level/menu2'
+  '/level/menu2',
+  '/start',
+  '/start/first'
 ]
 
 export default [
