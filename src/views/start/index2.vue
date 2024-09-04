@@ -1,10 +1,10 @@
 <template>
-  <el-steps :active="activeStep" style="max-width: 600px">
-    <el-step title="第一阶段" description="配置消息来源" />
-    <el-step title="第二阶段" description="配置消息robot" />
-    <el-step title="第三阶段" description="配置markdown模板" />
-    <el-step title="最终阶段" description="提交配置" />
-  </el-steps>
+  <a-steps :active="activeStep" style="max-width: 600px">
+    <a-step title="第一阶段" description="配置消息来源" />
+    <a-step title="第二阶段" description="配置消息robot" />
+    <a-step title="第三阶段" description="配置markdown模板" />
+    <a-step title="最终阶段" description="提交配置" />
+  </a-steps>
 
   <el-form :model="formData" ref="formRef" label-width="120px" style="max-width: 600px">
     <!-- 步骤 1 -->
@@ -52,16 +52,17 @@
 
     <!-- 步骤 3 -->
     <div v-if="activeStep === 2">
-      <el-form-item label="md模板" prop="markdown" :rules="[{ required: true, message: '必填项' }]">
-        <el-input
-          label="md模板"
-          type="textarea"
-          v-model="formData.markdown"
-          placeholder="请输入Markdown内容"
-          rows="10"
-          :rules="[{ required: true, message: '必填项' }]"
-        />
-      </el-form-item>
+      <!-- <el-form-item label="md模板" prop="markdown" :rules="[{ required: true, message: '必填项' }]">
+          <el-input v-model="formData.markdown" />
+        </el-form-item> -->
+      <el-input
+        label="md模板"
+        type="textarea"
+        v-model="formData.markdown"
+        placeholder="请输入Markdown内容"
+        rows="10"
+        :rules="[{ required: true, message: '必填项' }]"
+      />
     </div>
 
     <!-- 步骤 4 -->
@@ -74,25 +75,19 @@
       <p>密钥: {{ formData.secret }}</p>
       <p>token: {{ formData.accesstoken }}</p>
       <p>md模板: {{ formData.markdown }}</p>
-      <p>robot是否立即使用: {{ formData.switch }}</p>
-      <p>是否处理robot: {{ formData.robot_ok }}</p>
-      <p>是否处理md: {{ formData.markdown_ok }}</p>
     </div>
 
-    <el-form-item>
-      <el-button @click="prevStep" :disabled="activeStep === 0">上一步</el-button>
-      <el-button @click="nextStep" :disabled="activeStep === 3">下一步</el-button>
-      <el-button @click="skipStep1" v-if="activeStep === 1" type="warning">跳过</el-button>
-      <el-button @click="skipStep2" v-if="activeStep === 2" type="warning">跳过</el-button>
-      <el-button type="primary" @click="submitForm" v-if="activeStep === 3">提交</el-button>
-    </el-form-item>
-  </el-form>
+    <a-form-item>
+      <a-button @click="prevStep" :disabled="activeStep === 0">上一步</a-button>
+      <a-button @click="nextStep" :disabled="activeStep === 3">下一步</a-button>
+      <a-button type="primary" @click="submitForm" v-if="activeStep === 3">提交</a-button>
+    </a-form-item>
+  </a-form>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
-import { poststepsform } from '@/api/login'
 
 const formRef = ref<FormInstance>()
 const activeStep = ref(0)
@@ -103,25 +98,8 @@ const formData = reactive({
   robot_class: '',
   secret: '',
   accesstoken: '',
-  markdown: `{{ if eq .Status "firing" }} 
-## <font color="#FF0000">【报警中】服务器{{ .Labels.instance }}</font>
-{{ else if eq .Status "resolved" }} 
-## <font color="#20B2AA">【已恢复】服务{{ .Labels.instance }}</font>
-{{ else }} 
-## 标题：信息通知 
-{{ end }} 
-=================== 
-**告警规则**:{{ .Labels.alertname }} 
-**告警级别**:{{ .Labels.severity }} 
-**主机名称**:{{ .Labels.instance }} 
-**告警详情**:{{ .Annotations.description }} 
-**告警状态**:{{ .Status }} 
-**触发时间**:{{ .StartsAt }} {{ if eq .Status "resolved" }} 
-**恢复时间**:{{ .EndsAt }} {{ end }} 
-**规则详情**:[Prometheus控制台]({{ .GeneratorURL }})`,
-  switch: true,
-  robot_ok: true,
-  markdown_ok: true
+  markdown: '',
+  switch: true
 })
 
 const nextStep = () => {
@@ -138,32 +116,12 @@ const prevStep = () => {
   if (activeStep.value > 0) activeStep.value--
 }
 
-const skipStep1 = () => {
-  // 跳过当前步骤，直接跳到下一步骤
-  if (activeStep.value == 1) activeStep.value++
-  formData.switch = false
-  formData.robot_ok = false
-  formData.robot_name = ''
-  formData.robot_class = ''
-  formData.secret = ''
-  formData.accesstoken = ''
-}
-
-const skipStep2 = () => {
-  // 跳过当前步骤，直接跳到下一步骤
-  if (activeStep.value == 2) activeStep.value++
-  formData.markdown_ok = false
-  formData.markdown = ''
-}
-
 const submitForm = () => {
   formRef.value?.validate((valid) => {
     if (valid) {
       console.log('提交的数据:', formData)
-      poststepsform(formData).then((response) => {
-        // 处理响应
-        console.log(response)
-      })
+    } else {
+      console.log('表单验证失败')
     }
   })
 }

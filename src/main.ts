@@ -33,6 +33,14 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
+// ant
+import  DatePicker  from 'ant-design-vue';
+import 'ant-design-vue/dist/reset.css';
+
+// ar
+import ArcoVue from '@arco-design/web-vue';
+import '@arco-design/web-vue/dist/arco.css';
+
 import App from './App.vue'
 
 import './permission'
@@ -51,6 +59,8 @@ const setupAll = async () => {
 
   setupRouter(app)
   app.use(ElementPlus)
+  app.use(DatePicker)
+  app.use(ArcoVue)
   app.mount('#app')
 }
 

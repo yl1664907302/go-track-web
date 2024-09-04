@@ -1,5 +1,5 @@
 import request from '@/axios'
-import type { UserType } from './types'
+import type { StepsFormType, UserType } from './types'
 
 interface RoleParams {
   roleName: string
@@ -21,4 +21,8 @@ export const getAdminRoleApi = (
 
 export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {
   return request.get({ url: '/mock/role/list2', params })
+}
+
+export const poststepsform = (data: StepsFormType): Promise<IResponse<StepsFormType>> => {
+  return request.post({ url: '/alertmanger/post/stepform', data })
 }
