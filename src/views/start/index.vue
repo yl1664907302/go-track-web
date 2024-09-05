@@ -30,13 +30,25 @@
       >
         <el-input v-model="formData.robot_name" />
       </el-form-item>
-      <el-form-item
+      <div style="display: flex">
+        <span style="margin-left: 90px">类型</span>
+        <el-select v-model="formData.robot_class" class="m-2" placeholder="请选择robot类型">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            style="margin-left: 50px"
+          />
+        </el-select>
+      </div>
+      <!-- <el-form-item
         label="robot类型"
         prop="robot_class"
         :rules="[{ required: true, message: '必填项' }]"
       >
         <el-input v-model="formData.robot_class" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="密钥" prop="secret" :rules="[{ required: true, message: '必填项' }]">
         <el-input v-model="formData.secret" />
       </el-form-item>
@@ -47,7 +59,14 @@
       >
         <el-input v-model="formData.accesstoken" />
       </el-form-item>
-      <el-checkbox v-model="formData.switch">启用机器人</el-checkbox>
+      <span style="margin-left: 55px">是否启用</span>
+      <el-switch
+        v-model="formData.switch"
+        inline-prompt
+        active-text="ON"
+        inactive-text="OFF"
+        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; margin-left: 10px"
+      />
     </div>
 
     <!-- 步骤 3 -->
@@ -93,6 +112,8 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { poststepsform } from '@/api/login'
+import { h } from 'vue'
+import { ElNotification } from 'element-plus'
 
 const formRef = ref<FormInstance>()
 const activeStep = ref(0)
@@ -162,9 +183,23 @@ const submitForm = () => {
       console.log('提交的数据:', formData)
       poststepsform(formData).then((response) => {
         // 处理响应
-        console.log(response)
+        responses
       })
     }
+  })
+}
+
+const options = [
+  {
+    value: 'dingtalk',
+    label: '钉钉'
+  }
+]
+
+const responses = () => {
+  ElNotification({
+    title: 'Title',
+    message: h('i', { style: 'color: teal' }, '创建成功')
   })
 }
 </script>
