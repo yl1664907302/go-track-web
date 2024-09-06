@@ -3,7 +3,8 @@
     <el-step title="第一阶段" description="配置消息来源" />
     <el-step title="第二阶段" description="配置消息robot" />
     <el-step title="第三阶段" description="配置markdown模板" />
-    <el-step title="最终阶段" description="提交配置" />
+    <el-step title="核对阶段" description="提交配置" />
+    <el-step title="结果" description="提交完成" />
   </el-steps>
 
   <el-form :model="formData" ref="formRef" label-width="120px" style="max-width: 600px">
@@ -98,6 +99,21 @@
       <p>是否处理md: {{ formData.markdown_ok }}</p>
     </div>
 
+    <!-- 步骤 5 -->
+    <div v-if="activeStep === 4">
+      <el-col :sm="12" :lg="6">
+        <el-result icon="success" title="Success Tip" sub-title="Please follow the instructions">
+          <template #extra>
+            <el-button type="primary">Back</el-button>
+          </template>
+        </el-result>
+        <el-result icon="error" title="error Tip" sub-title="Please follow the instructions">
+          <template #extra>
+            <el-button type="primary">Back</el-button>
+          </template>
+        </el-result>
+      </el-col>
+    </div>
     <el-form-item>
       <el-button @click="prevStep" :disabled="activeStep === 0">上一步</el-button>
       <el-button @click="nextStep" :disabled="activeStep === 3">下一步</el-button>
@@ -161,32 +177,34 @@ const prevStep = () => {
 
 const skipStep1 = () => {
   // 跳过当前步骤，直接跳到下一步骤
-  if (activeStep.value == 1) activeStep.value++
-  formData.switch = false
-  formData.robot_ok = false
-  formData.robot_name = ''
-  formData.robot_class = ''
-  formData.secret = ''
-  formData.accesstoken = ''
+  if (activeStep.value == 1) {
+    activeStep.value++
+    formData.switch = false
+    formData.robot_ok = false
+    formData.robot_name = ''
+    formData.robot_class = ''
+    formData.secret = ''
+    formData.accesstoken = ''
+  }
 }
 
 const skipStep2 = () => {
   // 跳过当前步骤，直接跳到下一步骤
-  if (activeStep.value == 2) activeStep.value++
-  formData.markdown_ok = false
-  formData.markdown = ''
+  if (activeStep.value == 2) {
+    activeStep.value++
+    formData.markdown_ok = false
+    formData.markdown = ''
+  }
 }
 
 const submitForm = () => {
-  formRef.value?.validate((valid) => {
-    if (valid) {
-      console.log('提交的数据:', formData)
-      poststepsform(formData).then((response) => {
-        // 处理响应
-        responses
-      })
-    }
-  })
+  poststepsform(formData)
+    .then((response) => {
+      console.log('完整响应:', response.data)
+    })
+    .catch((error) => {
+      console.error('请求发生错误:', error)
+    })
 }
 
 const options = [
@@ -196,12 +214,13 @@ const options = [
   }
 ]
 
-const responses = () => {
-  ElNotification({
-    title: 'Title',
-    message: h('i', { style: 'color: teal' }, '创建成功')
-  })
-}
+const status = ref<number | null>(null)
+// const responses = () => {
+//   ElNotification({
+//     title: 'Title',
+//     message: h('i', { style: 'color: teal' }, '创建成功')
+//   })
+// }
 </script>
 
 <style scoped>

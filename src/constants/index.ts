@@ -1,7 +1,7 @@
 /**
  * 请求成功状态码
  */
-export const SUCCESS_CODE = 200
+export const SUCCESS_CODE = 0
 
 /**
  * 请求contentType
