@@ -23,10 +23,6 @@ export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>>
   return request.get({ url: '/mock/role/list2', params })
 }
 
-export type StepsFormType_response = {
-  data: any
-}
-
 export const poststepsform = (data: StepsFormType): Promise<IResponse<StepsFormType_response>> => {
   return request.post({ url: '/alertmanger/post/stepform', data })
 }

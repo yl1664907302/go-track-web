@@ -140,21 +140,21 @@ const formData = reactive({
   robot_class: '',
   secret: '',
   accesstoken: '',
-  markdown: `{{ if eq .Status "firing" }} 
+  markdown: `{{ if eq .Status "firing" }}
 ## <font color="#FF0000">【报警中】服务器{{ .Labels.instance }}</font>
-{{ else if eq .Status "resolved" }} 
+{{ else if eq .Status "resolved" }}
 ## <font color="#20B2AA">【已恢复】服务{{ .Labels.instance }}</font>
-{{ else }} 
-## 标题：信息通知 
-{{ end }} 
-=================== 
-**告警规则**:{{ .Labels.alertname }} 
-**告警级别**:{{ .Labels.severity }} 
-**主机名称**:{{ .Labels.instance }} 
-**告警详情**:{{ .Annotations.description }} 
-**告警状态**:{{ .Status }} 
-**触发时间**:{{ .StartsAt }} {{ if eq .Status "resolved" }} 
-**恢复时间**:{{ .EndsAt }} {{ end }} 
+{{ else }}
+## 标题：信息通知
+{{ end }}
+===================
+**告警规则**:{{ .Labels.alertname }}
+**告警级别**:{{ .Labels.severity }}
+**主机名称**:{{ .Labels.instance }}
+**告警详情**:{{ .Annotations.description }}
+**告警状态**:{{ .Status }}
+**触发时间**:{{ .StartsAt }} {{ if eq .Status "resolved" }}
+**恢复时间**:{{ .EndsAt }} {{ end }}
 **规则详情**:[Prometheus控制台]({{ .GeneratorURL }})`,
   switch: true,
   robot_ok: true,
@@ -198,9 +198,10 @@ const skipStep2 = () => {
 }
 
 const submitForm = () => {
+  debugger
   poststepsform(formData)
-    .then((response) => {
-      console.log('完整响应:', response.data)
+    .then((response) => { // 这个地方接受的参数就是undefined
+      console.log('完整响应:', response.code)
     })
     .catch((error) => {
       console.error('请求发生错误:', error)
@@ -214,7 +215,7 @@ const options = [
   }
 ]
 
-const status = ref<number | null>(null)
+// const status = ref<number | null>(null)
 // const responses = () => {
 //   ElNotification({
 //     title: 'Title',

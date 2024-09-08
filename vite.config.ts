@@ -4,7 +4,7 @@ import type { UserConfig, ConfigEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import VueJsx from '@vitejs/plugin-vue-jsx'
 import progress from 'vite-plugin-progress'
-import EslintPlugin from 'vite-plugin-eslint'
+// import EslintPlugin from 'vite-plugin-eslint'
 import { ViteEjsPlugin } from "vite-plugin-ejs"
 import { viteMockServe } from 'vite-plugin-mock'
 import PurgeIcons from 'vite-plugin-purge-icons'
@@ -57,10 +57,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
             ]
           })
         : undefined,
-      EslintPlugin({
-        cache: false,
-        include: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx'] // 检查的文件
-      }),
+      // EslintPlugin({
+      //   cache: false,
+      //   include: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx'] // 检查的文件
+      // }),
       VueI18nPlugin({
         runtimeOnly: true,
         compositionOnly: true,

@@ -23,3 +23,7 @@ export type StepsFormType = {
   markdown_ok: boolean
   markdown: string
 }
+
+export type StepsFormType_response = {
+  message: any
+}
