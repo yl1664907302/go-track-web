@@ -117,8 +117,9 @@ export default {
     codePlaceholder: '请输入验证码'
   },
   router: {
+    show: '所有消息模块',
     start: '开始',
-    first: '第一步',
+    first: '创建消息模块',
     login: '登录',
     level: '多级菜单',
     menu: '菜单',

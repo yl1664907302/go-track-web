@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
-import { getParentLayout, Layout } from '@/utils/routerHelper'
+import { Layout } from '@/utils/routerHelper'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
@@ -121,8 +121,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     redirect: '/start/first',
     name: 'Start',
     meta: {
-      title: t('router.start'),
-      icon: 'carbon:skill-level-advanced'
+      title: t('router.start')
     },
     children: [
       {
@@ -131,6 +130,25 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/start/index.vue'),
         meta: {
           title: t('router.first')
+        }
+      }
+    ]
+  },
+  {
+    path: '/list',
+    component: Layout,
+    redirect: '/list/show',
+    name: 'List',
+    meta: {
+      title: t('router.start')
+    },
+    children: [
+      {
+        path: 'show',
+        name: 'Show',
+        component: () => import('@/views/main/index.vue'),
+        meta: {
+          title: t('router.show')
         }
       }
     ]

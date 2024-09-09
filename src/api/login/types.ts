@@ -25,5 +25,6 @@ export type StepsFormType = {
 }
 
 export type StepsFormType_response = {
+  status: any
   message: any
 }

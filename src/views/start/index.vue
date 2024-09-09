@@ -7,7 +7,7 @@
     <el-step title="结果" description="提交完成" />
   </el-steps>
 
-  <el-form :model="formData" ref="formRef" label-width="120px" style="max-width: 600px">
+  <el-form :model="formData" ref="formRef" label-width="90px" style="max-width: 400px">
     <!-- 步骤 1 -->
     <div v-if="activeStep === 0">
       <el-form-item label="来源昵称" prop="niname" :rules="[{ required: true, message: '必填项' }]">
@@ -32,7 +32,7 @@
         <el-input v-model="formData.robot_name" />
       </el-form-item>
       <div style="display: flex">
-        <span style="margin-left: 90px">类型</span>
+        <span style="margin-left: 60px">类型</span>
         <el-select v-model="formData.robot_class" class="m-2" placeholder="请选择robot类型">
           <el-option
             v-for="item in options"
@@ -100,26 +100,25 @@
     </div>
 
     <!-- 步骤 5 -->
-    <div v-if="activeStep === 4">
-      <el-col :sm="12" :lg="6">
-        <el-result icon="success" title="Success Tip" sub-title="Please follow the instructions">
-          <template #extra>
-            <el-button type="primary">Back</el-button>
-          </template>
-        </el-result>
-        <el-result icon="error" title="error Tip" sub-title="Please follow the instructions">
-          <template #extra>
-            <el-button type="primary">Back</el-button>
-          </template>
-        </el-result>
-      </el-col>
+    <div style="margin-right: -15px" class="flex-center" v-if="activeStep === 4">
+      <a-result v-if="response_1.status === 'success'" status="success" title="">
+        <template #subtitle> {{ response_1.message }} </template>
+      </a-result>
+      <a-result v-if="response_1.status === 'error'" status="error" title="">
+        <template #subtitle> {{ response_1.message }} </template>
+      </a-result>
     </div>
     <el-form-item>
-      <el-button @click="prevStep" :disabled="activeStep === 0">上一步</el-button>
-      <el-button @click="nextStep" :disabled="activeStep === 3">下一步</el-button>
+      <el-button @click="prevStep" :disabled="activeStep === 0 || activeStep === 4"
+        >上一步</el-button
+      >
+      <el-button @click="nextStep" :disabled="activeStep === 3 || activeStep === 4"
+        >下一步</el-button
+      >
       <el-button @click="skipStep1" v-if="activeStep === 1" type="warning">跳过</el-button>
       <el-button @click="skipStep2" v-if="activeStep === 2" type="warning">跳过</el-button>
       <el-button type="primary" @click="submitForm" v-if="activeStep === 3">提交</el-button>
+      <el-button type="primary" @click="fisrtStep" v-if="activeStep === 4">重新提交</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -161,6 +160,10 @@ const formData = reactive({
   markdown_ok: true
 })
 
+const fisrtStep = () => {
+  activeStep.value = 0
+}
+
 const nextStep = () => {
   formRef.value?.validate((valid) => {
     if (valid) {
@@ -198,10 +201,14 @@ const skipStep2 = () => {
 }
 
 const submitForm = () => {
-  debugger
   poststepsform(formData)
-    .then((response) => { // 这个地方接受的参数就是undefined
-      console.log('完整响应:', response.code)
+    .then((response) => {
+      // 这个地方接受的参数就是undefined
+      console.log('完整响应:', response)
+      response_1.status = response.data.status
+      response_1.message = response.data.message
+      activeStep.value++
+      alert()
     })
     .catch((error) => {
       console.error('请求发生错误:', error)
@@ -215,17 +222,44 @@ const options = [
   }
 ]
 
-// const status = ref<number | null>(null)
-// const responses = () => {
-//   ElNotification({
-//     title: 'Title',
-//     message: h('i', { style: 'color: teal' }, '创建成功')
-//   })
-// }
+const response_1 = reactive({
+  status: '',
+  message: ''
+})
+const alert = () => {
+  let type_1 = ''
+  let title_1 = ''
+  if (response_1.status === 'error') {
+    type_1 = 'error'
+    title_1 = '创建失败'
+  } else {
+    type_1 = 'success'
+    title_1 = '创建成功'
+  }
+
+  ElNotification({
+    title: title_1,
+    message: h('i', { style: 'color: teal' }, response_1.message),
+    position: 'top-right',
+    type: type_1
+  })
+}
 </script>
 
 <style scoped>
 .el-steps {
   margin-bottom: 20px;
+}
+.result-success .el-result__subtitle,
+.result-error .el-result__subtitle {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.result-success .el-result__icon,
+.result-error .el-result__icon {
+  margin-right: 8px; /* Adjust space between icon and text */
 }
 </style>
