@@ -11,6 +11,7 @@ export type UserType = {
   permissions: string | string[]
 }
 
+// 分步表单
 export type StepsFormType = {
   niname: string
   robot_name: string
@@ -27,4 +28,25 @@ export type StepsFormType = {
 export type StepsFormType_response = {
   status: any
   message: any
+}
+
+// 查询receivers
+
+export type SelectReceivers_response = {
+  niname: string
+  receiver_name: string
+  mnumber_firing: number
+  mnumber_resolved: number
+}[]
+
+// 获取指定消息数量
+export type SelectMarkDownByStatus = {
+  index: string
+  status: string
+}
+
+export type SelectMarkDownByStatus_response = {
+  markdowns: any
+  number: number
+  status: string
 }

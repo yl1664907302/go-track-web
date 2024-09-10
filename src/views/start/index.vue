@@ -1,10 +1,10 @@
 <template>
   <el-steps :active="activeStep" style="max-width: 600px">
-    <el-step title="第一阶段" description="配置消息来源" />
-    <el-step title="第二阶段" description="配置消息robot" />
-    <el-step title="第三阶段" description="配置markdown模板" />
-    <el-step title="核对阶段" description="提交配置" />
-    <el-step title="结果" description="提交完成" />
+    <el-step title="配置消息来源" />
+    <el-step title="配置消息robot" />
+    <el-step title="配置消息模板" />
+    <el-step title="提交配置" />
+    <el-step title="提交完成" />
   </el-steps>
 
   <el-form :model="formData" ref="formRef" label-width="90px" style="max-width: 400px">
@@ -203,7 +203,6 @@ const skipStep2 = () => {
 const submitForm = () => {
   poststepsform(formData)
     .then((response) => {
-      // 这个地方接受的参数就是undefined
       console.log('完整响应:', response)
       response_1.status = response.data.status
       response_1.message = response.data.message
