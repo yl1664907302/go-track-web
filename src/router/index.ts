@@ -10,7 +10,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/start',
+    redirect: '/alertmanger',
     name: 'Root',
     meta: {
       hidden: true
@@ -116,12 +116,12 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
   //   ]
   // },
   {
-    path: '/start',
+    path: '/alertmanger',
     component: Layout,
-    redirect: '/start/first',
-    name: 'Start',
+    redirect: '/alertmanger/first',
+    name: 'Alertmanger',
     meta: {
-      title: t('router.start')
+      title: t('router.alertmanger')
     },
     children: [
       {
@@ -131,18 +131,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.first')
         }
-      }
-    ]
-  },
-  {
-    path: '/list',
-    component: Layout,
-    redirect: '/list/show',
-    name: 'List',
-    meta: {
-      title: t('router.start')
-    },
-    children: [
+      },
       {
         path: 'show',
         name: 'Show',

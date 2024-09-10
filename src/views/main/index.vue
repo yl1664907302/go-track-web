@@ -1,30 +1,36 @@
 <template>
+   <el-row :gutter="12" class="demo-radius">
   <el-space wrap :size="10">
     <el-col v-for="(item, index) in receivers" :key="index" :span="5">
-      <el-card shadow="hover" class="box-card" style="width: 260px">
-        <el-space :size="93">
-          <div>
-            {{ item.niname }}
-          </div>
+      <el-card  shadow="hover" class="flex flex-col justify-center items-center custom-card"       m="auto"
+      w="46" style="width: 260px">
+        <el-space :size="120">
+            <el-text class="mx-1" tag="b" >
+               {{ item.niname }}
+            </el-text>
+            <el-popconfirm title="你确定要删除此模块吗?">
+              <template #reference>
           <el-button type="">
             <el-icon style="vertical-align: middle">
               <Delete />
             </el-icon>
-            <span style="vertical-align: middle"> 删除 </span>
           </el-button>
+        </template>
+        </el-popconfirm>
         </el-space>
         <el-divider border-style="dashed" />
         <el-space :size="1" :spacer="spacer">
           <el-badge :value="item.mnumber_firing" :max="99" class="item">
-            <el-button type="warning" :icon="Notification">firing</el-button>
+            <el-button type="danger" :icon="Notification">firing</el-button>
           </el-badge>
           <el-badge :value="item.mnumber_resolved" :max="99" class="item">
-            <el-button type="primary" :icon="Notification">resolved</el-button>
+            <el-button type="success" :icon="Notification">resolved</el-button>
           </el-badge>
         </el-space>
       </el-card>
     </el-col>
   </el-space>
+</el-row>
 </template>
 <script setup lang="ts">
 import { Delete, Notification } from '@element-plus/icons-vue'
@@ -42,38 +48,62 @@ type receiver = {
 const receivers = reactive<receiver[]>([])
 
 const select_recevicer = async () => {
-  // debugger
   getreceivers()
-    .then((responses) => {
-      var i
-      for (i = 0; i < responses.data.length; i++) {
-        receivers[i] = responses.data[i]
-        const n = select_markdownnumbykey(receivers[i].receiver_name, 'firing')
-        receivers[i].mnumber_firing = n
-        const m = select_markdownnumbykey(receivers[i].receiver_name, 'resolved')
-        receivers[i].mnumber_resolved = m
-      }
-    })
-    .catch((error) => {
-      console.error('请求发生错误:', error)
-    })
+  .then((responses) => {
+    responses.data.forEach((receiver, i) => {
+      receivers[i] = receiver;
+
+      // 创建局部引用保存异步的接收者对象
+      const currentReceiver = receivers[i];
+
+      // 异步的获取接收者正在告警数
+      select_markdownnumbykey(currentReceiver.receiver_name, 'firing')
+        .then((res) => {
+          currentReceiver.mnumber_firing = res;
+        })
+        .catch((error) => console.error('Error fetching firing markdown number:', error));
+
+      // 异步的获取接收者恢复告警数
+      select_markdownnumbykey(currentReceiver.receiver_name, 'resolved')
+        .then((res) => {
+          currentReceiver.mnumber_resolved = res;
+        })
+        .catch((error) => console.error('Error fetching resolved markdown number:', error));
+    });
+  })
+  .catch((error) => {
+    console.error('请求发生错误:', error);
+  });
 }
 
-let mnumber: number
+let mnumber: number;
 // 查询指定的markdown数量
-const select_markdownnumbykey = (i: string, s: string): number => {
-  const params: SelectMarkDownByStatus = { index: i, status: s }
-  // 使用 await 等待异步操作完成
-  getmarkdownbystatus(params).then((res) => {
-    // 直接返回从 API 获取到的值
-    mnumber = res.data.number
-  })
-  console.log(mnumber)
-  return mnumber
-}
+const select_markdownnumbykey = async (i: string, s: string): Promise<number> => {
+  const params: SelectMarkDownByStatus = { index: i, status: s };
+
+  // 等待异步操作完成
+  try {
+    const res = await getmarkdownbystatus(params);
+    mnumber = res.data.number;
+    console.log(mnumber);
+    return mnumber;
+  } catch (error) {
+    console.error('Error fetching markdown:', error);
+    return 0; // or handle the error appropriately
+  }
+};
+
 
 const spacer = h(ElDivider, { direction: 'vertical' })
 
 // 使用钩子初始化
 onMounted(select_recevicer)
 </script>
+
+<style scoped>
+.custom-card {
+  background-color: #FAFAFA;
+  color: #333;
+  border: 1px solid #ccc;
+}
+</style>

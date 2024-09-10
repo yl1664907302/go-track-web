@@ -117,6 +117,7 @@ export default {
     codePlaceholder: '请输入验证码'
   },
   router: {
+    alertmanger: 'alertmanger',
     show: '所有消息模块',
     start: '开始',
     first: '创建消息模块',
