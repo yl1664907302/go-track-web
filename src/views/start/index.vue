@@ -1,10 +1,9 @@
 <template>
   <el-steps :active="activeStep" style="max-width: 600px">
-    <el-step title="配置消息来源" />
-    <el-step title="配置消息robot" />
-    <el-step title="配置消息模板" />
-    <el-step title="提交配置" />
-    <el-step title="提交完成" />
+    <el-step title="来源" />
+    <el-step title="媒介" />
+    <el-step title="模板" />
+    <el-step title="结果" />
   </el-steps>
 
   <el-form :model="formData" ref="formRef" label-width="90px" style="max-width: 400px">
@@ -167,7 +166,7 @@ const fisrtStep = () => {
 const nextStep = () => {
   formRef.value?.validate((valid) => {
     if (valid) {
-      if (activeStep.value < 3) activeStep.value++
+      if (activeStep.value < 3) ++activeStep.value
     } else {
       console.log('表单验证失败')
     }
@@ -175,7 +174,7 @@ const nextStep = () => {
 }
 
 const prevStep = () => {
-  if (activeStep.value > 0) activeStep.value--
+  if (activeStep.value > 0) --activeStep.value
 }
 
 const skipStep1 = () => {
@@ -206,8 +205,8 @@ const submitForm = () => {
       console.log('完整响应:', response)
       response_1.status = response.data.status
       response_1.message = response.data.message
-      activeStep.value++
       alert()
+      activeStep.value++
     })
     .catch((error) => {
       console.error('请求发生错误:', error)

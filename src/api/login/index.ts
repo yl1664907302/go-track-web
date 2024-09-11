@@ -1,5 +1,7 @@
 import request from '@/axios'
 import type {
+  DelRecevier,
+  DelRecevier_response,
   SelectMarkDownByStatus,
   SelectMarkDownByStatus_response,
   SelectReceivers_response,
@@ -45,4 +47,11 @@ export const getmarkdownbystatus = (
   params: SelectMarkDownByStatus
 ): Promise<IResponse<SelectMarkDownByStatus_response>> => {
   return request.get({ url: '/alertmanger/markdownbystatus', params })
+}
+
+// 删除receiver
+export const DelRecevierbyIndex = (
+  params: DelRecevier
+): Promise<IResponse<DelRecevier_response>> => {
+  return request.delete({ url: '/alertmanger/del/index', params })
 }

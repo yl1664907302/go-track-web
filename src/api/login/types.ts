@@ -50,3 +50,13 @@ export type SelectMarkDownByStatus_response = {
   number: number
   status: string
 }
+
+// 删除recevier
+export type DelRecevier = {
+  index: string
+}
+
+export type DelRecevier_response = {
+  status: string
+  message: any
+}
