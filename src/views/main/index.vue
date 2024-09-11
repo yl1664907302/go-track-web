@@ -1,15 +1,15 @@
 <template>
-  <el-row :gutter="12" class="demo-radius">
+  <el-row :gutter="0" class="demo-radius">
     <el-space wrap :size="10">
       <el-col v-for="(item, index) in receivers" :key="index" :span="5">
         <el-card
           shadow="hover"
           class="flex flex-col justify-center items-center custom-card"
           m="auto"
-          w="46"
+          w="66"
           style="width: 260px"
         >
-          <el-space :size="120">
+          <el-space :size="154.5">
             <el-text class="mx-1" tag="b">
               {{ item.niname }}
             </el-text>
@@ -157,16 +157,6 @@ const reloadPage = () => {
   router.replace({ path: '/alertmanger/show', query: { refresh: new Date().getTime() } })
 }
 
-// // 使用 ref 创建响应式数据
-// const showComponent = ref(true)
-
-// const toggleComponent = () => {
-//   showComponent.value = false // 先将组件隐藏
-//   nextTick(() => {
-//     // 等待 DOM 更新完成后重新显示组件，达到重渲染的效果
-//     showComponent.value = true
-//   })
-// }
 </script>
 
 <style scoped>
