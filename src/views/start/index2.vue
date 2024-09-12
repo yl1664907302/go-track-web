@@ -25,8 +25,4 @@
 
 <script lang="ts">
 import { reactive } from 'vue'
-
-const status = reactive({
-  result: ''
-})
 </script>

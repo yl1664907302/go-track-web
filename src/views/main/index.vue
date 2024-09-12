@@ -2,14 +2,8 @@
   <el-row :gutter="0" class="demo-radius">
     <el-space wrap :size="10">
       <el-col v-for="(item, index) in receivers" :key="index" :span="5">
-        <el-card
-          shadow="hover"
-          class="flex flex-col justify-center items-center custom-card"
-          m="auto"
-          w="66"
-          style="width: 260px"
-        >
-          <el-space :size="154.5">
+        <el-card shadow="always" class="dashed" m="auto" w="66" style="width: 260px">
+          <el-space :size="120">
             <el-text class="mx-1" tag="b">
               {{ item.niname }}
             </el-text>
@@ -23,11 +17,16 @@
           <el-divider border-style="dashed" />
           <el-space :size="1" :spacer="spacer">
             <el-badge :value="item.mnumber_firing" :max="99" class="item">
-              <el-button type="danger" :icon="Notification">firing</el-button>
+              <el-button
+                @click="gotodetail(item.niname, item.receiver_name, 'firing')"
+                type="danger"
+                :icon="Notification"
+                >正在告警</el-button
+              >
             </el-badge>
-            <el-badge :value="item.mnumber_resolved" :max="99" class="item">
+            <!-- <el-badge :value="item.mnumber_resolved" :max="99" class="item">
               <el-button type="success" :icon="Notification">resolved</el-button>
-            </el-badge>
+            </el-badge> -->
           </el-space>
           <el-dialog v-model="centerDialogVisible" title="警告" width="30%" center>
             <span>你确定要删除此模块吗</span>
@@ -50,7 +49,7 @@
 </template>
 <script setup lang="ts">
 import { Delete, Notification } from '@element-plus/icons-vue'
-import { h, onMounted, reactive, ref, nextTick } from 'vue'
+import { h, onMounted, reactive, ref } from 'vue'
 import { getmarkdownbystatus, getreceivers, DelRecevierbyIndex } from '@/api/login'
 import { ElDivider, ElNotification } from 'element-plus'
 import { SelectMarkDownByStatus, DelRecevier, DelRecevier_response } from '@/api/login/types'
@@ -76,18 +75,18 @@ const select_recevicer = async () => {
         const currentReceiver = receivers[i]
 
         // 异步的获取接收者正在告警数
-        select_markdownnumbykey(currentReceiver.receiver_name, 'firing')
+        select_markdownnumbykey(currentReceiver.receiver_name, 'active')
           .then((res) => {
             currentReceiver.mnumber_firing = res
           })
           .catch((error) => console.error('Error fetching firing markdown number:', error))
 
-        // 异步的获取接收者恢复告警数
-        select_markdownnumbykey(currentReceiver.receiver_name, 'resolved')
-          .then((res) => {
-            currentReceiver.mnumber_resolved = res
-          })
-          .catch((error) => console.error('Error fetching resolved markdown number:', error))
+        // // 异步的获取接收者恢复告警数
+        // select_markdownnumbykey(currentReceiver.receiver_name, 'resolved')
+        //   .then((res) => {
+        //     currentReceiver.mnumber_resolved = res
+        //   })
+        //   .catch((error) => console.error('Error fetching resolved markdown number:', error))
       })
     })
     .catch((error) => {
@@ -152,11 +151,23 @@ onMounted(select_recevicer)
 
 //重定向
 const router = useRouter()
+
 const reloadPage = () => {
   // 通过当前路径刷新页面
   router.replace({ path: '/alertmanger/show', query: { refresh: new Date().getTime() } })
 }
 
+//按钮跳转到详情页面
+const gotodetail = (n: string, r: string, s: string) => {
+  router.push({
+    path: '/alertmanger/status',
+    query: {
+      niname: n,
+      receiver: r,
+      state: s
+    }
+  })
+}
 </script>
 
 <style scoped>

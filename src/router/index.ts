@@ -139,9 +139,47 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.show')
         }
+      },
+      {
+        path: 'status',
+        name: 'Status',
+        component: () => import('@/views/main/detail.vue'),
+        meta: {
+          hidden: true,
+          title: t('router.status')
+        }
       }
     ]
   }
+  // {
+  //   path: 'status',
+  //   name: 'Status',
+  //   component: () => import('@/views/main/detail.vue'),
+  //   meta: {
+  //     title: t('router.status'),
+  //     showInSidebar: false
+  //   }
+  // }
+  // {
+  //   path: '/detail',
+  //   redirect: '/detail/status',
+  //   name: 'Detail',
+  //   component: Layout,
+  //   meta: {
+  //     title: t('router.detail')
+  //   },
+  //   children: [
+  //     {
+  //       path: 'status',
+  //       name: 'Status',
+  //       component: () => import('@/views/main/detail.vue'),
+  //       meta: {
+  //         title: t('router.status')
+  //         // showInSidebar: false
+  //       }
+  //     }
+  //   ]
+  // }
 ]
 
 const router = createRouter({
