@@ -7,7 +7,9 @@ import type {
   SelectReceivers_response,
   StepsFormType,
   StepsFormType_response,
-  UserType
+  UserType,
+  SelectMarkDownByStatus2Time_response,
+  SelectMarkDownByStatus2Time
 } from './types'
 
 interface RoleParams {
@@ -54,4 +56,12 @@ export const DelRecevierbyIndex = (
   params: DelRecevier
 ): Promise<IResponse<DelRecevier_response>> => {
   return request.delete({ url: '/alertmanger/del/index', params })
+}
+
+// 模糊查询
+
+export const getmarkdownbystatus2time = (
+  params: SelectMarkDownByStatus2Time
+): Promise<IResponse<SelectMarkDownByStatus2Time_response>> => {
+  return request.get({ url: '/alertmanger/markdownbystatus2mohu', params })
 }

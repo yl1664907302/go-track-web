@@ -60,3 +60,24 @@ export type DelRecevier_response = {
   status: string
   message: any
 }
+
+// 模糊查询
+export type SelectMarkDownByStatus2Time = {
+  index: string
+  status: string
+  time_start: string
+  time_end: string
+}
+
+export type SelectMarkDownByStatus2Time_response = {
+  markdowns: Markdowns[]
+  number: number
+  status: string
+}
+
+export type Markdowns = {
+  status: string
+  zhiwen: string
+  time: string
+  markdown: string
+}
