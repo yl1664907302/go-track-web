@@ -47,6 +47,7 @@
     "echarts-wordcloud": "^2.1.0",
     "element-plus": "2.5.5",
     "lodash-es": "^4.17.21",
+    "markdown-it": "^14.1.0",
     "marked": "^14.1.1",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",

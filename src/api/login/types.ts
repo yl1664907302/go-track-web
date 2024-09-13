@@ -63,8 +63,8 @@ export type DelRecevier_response = {
 
 // 模糊查询
 export type SelectMarkDownByStatus2Time = {
-  index: string
-  status: string
+  index: any
+  status: any
   time_start: string
   time_end: string
 }
