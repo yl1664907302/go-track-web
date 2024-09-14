@@ -5,8 +5,14 @@
         <el-card class="box-card1">
           <template #header>
             <div class="card-header">
-              <span>消息记录</span>
-              <el-button class="button" type="danger" text>{{ state }}</el-button>
+              <span>消息模块：{{ niname }}<br />当前分类：{{ state }}</span>
+              <el-button
+                @click="changeAlertClass()"
+                class="button"
+                type="primary"
+                style="margin-top: -55px; margin-left: 450px"
+                >切换消息分类</el-button
+              >
             </div>
           </template>
           <div class="block">
@@ -19,21 +25,20 @@
               :default-time="defaultTime2"
             />
           </div>
-          <el-card class="box-card2">
+          <el-scrollbar height="600px">
             <div class="demo-collapse">
-              <el-collapse v-model="activeNames" @change="handleChange">
+              <el-collapse v-model="activeNames">
                 <el-collapse-item
                   v-for="(item, index) in collapseItems"
                   :key="index"
-                  :title="'id：'+item.title"
-                  :name="item.name"
+                  :title="'触发时间：' + item.title"
+                  :name="item.num"
                 >
-                  <div  v-html="renderMarkdown(item.content)">
-                  </div>
+                  <div v-html="renderMarkdown(item.content)"> </div>
                 </el-collapse-item>
               </el-collapse>
             </div>
-          </el-card>
+          </el-scrollbar>
         </el-card>
       </el-space>
     </el-col>
@@ -46,15 +51,22 @@ import { ref, watch, onMounted } from 'vue'
 import { getmarkdownbystatus2time } from '@/api/login'
 import { SelectMarkDownByStatus2Time } from '@/api/login/types'
 import { marked } from 'marked'
+import { useRouter } from 'vue-router'
 // 获取路由参数
 const route = useRoute()
 const niname = route.query.niname
 const receiver = route.query.receiver
-const state = route.query.state
+let state = route.query.state
 
-// 默认时间范围设置为 2024 年 9 月 8 日当天
-const startDate = new Date(2024, 8, 8, 0, 0, 0) // 9月8日 00:00:00
-const endDate = new Date(2024, 8, 8, 23, 59, 59) // 9月8日 23:59:59
+// 获取今天的日期
+const today = new Date()
+
+// 设置 startDate 为今天的 00:00:00
+const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)
+
+// 设置 endDate 为今天的 23:59:59
+const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59)
+
 const value2 = ref<[Date, Date]>([startDate, endDate])
 
 // 默认时间设置
@@ -64,14 +76,14 @@ const defaultTime2 = [new Date(2000, 1, 1, 12, 0, 0), new Date(2000, 2, 1, 8, 0,
 const activeNames = ref(['1'])
 
 // 处理 collapse 的切换事件
-const handleChange = (val: string[]) => {
-  console.log(val)
-}
+// const handleChange = (val: string[]) => {
+//   console.log(val)
+// }
 
 // markdown转换
 marked.setOptions({
-  gfm: true,        // 启用 GitHub 风格的 Markdown
-  breaks: true      // 将单个换行符视为 <br>
+  gfm: true,
+  breaks: true
 })
 const renderMarkdown = (markdownText: string) => {
   return marked(markdownText)
@@ -90,12 +102,14 @@ const getmarkdown = (i: string, s: string, t1: string, t2: string) => {
   }
 
   getmarkdownbystatus2time(params)
-  .then((resp) => {
+    .then((resp) => {
+      let i = 1
       // 假设 resp.data.markdowns 是一个数组，包含多个 markdown 项
       collapseItems.value = resp.data.markdowns.map((item: any) => ({
         name: item.status, // 例如，用 status 作为 name
-        title: item.zhiwen, // 用 zhiwen 作为 title
-        content: item.markdown // markdown 内容
+        title: item.time, // 用 zhiwen 作为 title
+        content: item.markdown, // markdown 内容
+        num: i++ //配置折叠面板的id，变更事情时打开点击的页面
       }))
     })
     .finally(() => {
@@ -107,14 +121,37 @@ const getmarkdown = (i: string, s: string, t1: string, t2: string) => {
 watch(value2, (newVal) => {
   if (newVal) {
     const [start, end] = newVal
-    getmarkdown("l1", "resolved", start.toISOString(), end.toISOString())
+    getmarkdown(receiver as string, state as string, start.toISOString(), end.toISOString())
   }
 })
+
+//切换分类事件
+const changeAlertClass = () => {
+  let s: string
+  if ((state as string) == 'firing') {
+    s = 'resolved'
+  } else {
+    s = 'firing'
+  }
+  reloadPage(s)
+}
+// 创建路由需要此作用域
+const router = useRouter()
+const reloadPage = (s: string) => {
+  router.push({
+    path: '/alertmanger/status',
+    query: {
+      niname: niname as string,
+      receiver: receiver as string,
+      state: s as string
+    }
+  })
+}
 
 // 在组件挂载时调用 getmarkdown，加载默认时间范围的数据
 onMounted(() => {
   const [start, end] = value2.value
-  getmarkdown("l1", "resolved", "2024-09-09T00:00:00.000Z", "2024-09-10T15:59:59.000Z")
+  getmarkdown(receiver as string, state as string, start.toISOString(), end.toISOString())
 })
 </script>
 
@@ -136,10 +173,17 @@ onMounted(() => {
 }
 .box-card1 {
   width: 600px;
-  height: 750px;
+  height: 800px;
 }
-.box-card2 {
-  width: 560px;
-  height: 500px;
+.scrollbar-demo-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  margin: 10px;
+  text-align: center;
+  border-radius: 4px;
+  background: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
 }
 </style>
