@@ -42,13 +42,6 @@
           />
         </el-select>
       </div>
-      <!-- <el-form-item
-        label="robot类型"
-        prop="robot_class"
-        :rules="[{ required: true, message: '必填项' }]"
-      >
-        <el-input v-model="formData.robot_class" />
-      </el-form-item> -->
       <el-form-item label="密钥" prop="secret" :rules="[{ required: true, message: '必填项' }]">
         <el-input v-model="formData.secret" />
       </el-form-item>

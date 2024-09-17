@@ -120,7 +120,7 @@ const DelReceiver_f = (index: string) => {
     .then((resp) => {
       delreceiver.status = resp.data.status
       delreceiver.message = resp.data.message
-      select_recevicer()
+      // select_recevicer()
       reloadPage()
     })
     .finally(() => {

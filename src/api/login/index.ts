@@ -9,7 +9,13 @@ import type {
   StepsFormType_response,
   UserType,
   SelectMarkDownByStatus2Time_response,
-  SelectMarkDownByStatus2Time
+  SelectMarkDownByStatus2Time,
+  CreateRobot,
+  CreateRobot_response,
+  SelectRobot,
+  SelectRobot_response,
+  DelRobot,
+  DelRobot_response
 } from './types'
 
 interface RoleParams {
@@ -64,4 +70,22 @@ export const getmarkdownbystatus2time = (
   params: SelectMarkDownByStatus2Time
 ): Promise<IResponse<SelectMarkDownByStatus2Time_response>> => {
   return request.get({ url: '/alertmanger/markdownbystatus2mohu', params })
+}
+
+
+//创建机器人
+
+export const  postcreaterobot = (data:CreateRobot):Promise<IResponse<CreateRobot_response>> => {
+  return request.post({ url: '/alertmanger/post/newrobot', data })
+}
+
+// 查询机器人
+
+export const getrobots = (params:SelectRobot): Promise<IResponse<SelectRobot_response>> => {
+  return request.get({ url: '/alertmanger/robot' ,params})
+}
+
+// 删除机器人
+export const delrobots = (params:DelRobot): Promise<IResponse<DelRobot_response>> => {
+  return request.delete({ url: '/alertmanger/delrobot' ,params})
 }
