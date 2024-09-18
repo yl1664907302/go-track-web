@@ -7,53 +7,55 @@
             <span>消息模块：{{ niname }}<br />当前分类：{{ state }}</span>
             <div class="button-container">
               <el-button @click="changeAlertClass()" class="button" type="primary">
-                切换消息分类</el-button>
+                切换消息分类</el-button
+              >
             </div>
           </div>
         </template>
         <div class="block">
           <span class="demonstration">选择消息查询的时间范围</span>
-          <el-date-picker v-model="value2" type="datetimerange" start-placeholder="Start Date"
-            end-placeholder="End Date" :default-time="defaultTime2" />
+          <el-date-picker
+            v-model="value2"
+            type="datetimerange"
+            start-placeholder="Start Date"
+            end-placeholder="End Date"
+            :default-time="defaultTime2"
+          />
         </div>
         <el-scrollbar height="600px">
           <div class="demo-collapse">
             <el-collapse v-model="activeNames">
-              <el-collapse-item v-for="(item, index) in collapseItems" :key="index" :title="'触发时间：' + item.title"
-                :name="item.num">
+              <el-collapse-item
+                v-for="(item, index) in collapseItems"
+                :key="index"
+                :title="'触发时间：' + item.title"
+                :name="item.num"
+              >
                 <div v-html="renderMarkdown(item.content)"> </div>
               </el-collapse-item>
             </el-collapse>
           </div>
         </el-scrollbar>
       </el-card>
-
       <el-card class="box-card2">
         <template #header>
           <div class="card-header">
-            <span>robot列表/创建</span>
+            <span> 消息模板更新/创建</span>
           </div>
         </template>
-        <el-form ref="formRef" :model="form" label-width="auto">
-          <el-form-item prop="robot_name" label="昵称" :rules="[{ required: true, message: '必填项' }]">
-            <el-input v-model="form.robot_name" />
-          </el-form-item>
-          <el-form-item prop="robot_class" label="类型" :rules="[{ required: true, message: '必填项' }]">
-            <el-select v-model="form.robot_class" placeholder="请选择你的webhook类型">
-              <el-option label="钉钉" value="dingtalk" />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="switch" label="启用">
-            <el-switch v-model="form.switch" />
-          </el-form-item>
-          <el-form-item prop="accesstoken" label="token" :rules="[{ required: true, message: '必填项' }]">
-            <el-input v-model="form.accesstoken" type="textarea" />
-          </el-form-item>
-          <el-form-item prop="secret" label="密钥" :rules="[{ required: true, message: '必填项' }]">
-            <el-input v-model="form.secret" type="textarea" />
+        <el-form ref="formRef2" :model="markdown_template" label-width="auto">
+          <el-form-item
+            prop="desc.markdown"
+            label="模板"
+            v-model="markdown_template_desc.markdown"
+            :rules="[{ required: true, message: '必填项' }]"
+          >
+            <el-input rows="31" v-model="markdown_template.desc.markdown" type="textarea" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit_robot_create" style="margin-left:40% ;">创建</el-button>
+            <el-button type="primary" @click="update_markdown" style="margin-left: 40%"
+              >提交</el-button
+            >
           </el-form-item>
         </el-form>
       </el-card>
@@ -63,16 +65,23 @@
             <span>机器人列表</span>
           </div>
         </template>
-        <el-scrollbar style="height: 300px;">
+        <el-scrollbar style="height: 300px">
           <div class="demo-collapse2">
             <el-collapse v-model="activeNames_1">
-              <el-collapse-item v-for="(item, index) in collapseItems_robot" :key="index"
-                :title="'机器人名称：' + item.robot_name" :name="item.robot_id">
+              <el-collapse-item
+                v-for="(item, index) in collapseItems_robot"
+                :key="index"
+                :title="'机器人名称：' + item.robot_name"
+                :name="item.robot_id"
+              >
                 <template #title>
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; justify-content: space-between; align-items: center">
                     <span>机器人名称：{{ item.robot_name }}</span>
                     <el-button type="primary" size="mini" @click="centerDialogVisible = true">
-                      操作
+                      删除
+                    </el-button>
+                    <el-button type="primary" size="mini" @click="centerDialogVisible2 = true">
+                      修改
                     </el-button>
                   </div>
                 </template>
@@ -82,8 +91,65 @@
                   <template #footer>
                     <span class="dialog-footer">
                       <el-button @click="centerDialogVisible = false">取消</el-button>
-                      <el-button type="primary"
-                        @click="del_robot(item.robot_id), (centerDialogVisible = false)">确定</el-button>
+                      <el-button
+                        type="primary"
+                        @click="del_robot(item.robot_id), (centerDialogVisible = false)"
+                        >确定</el-button
+                      >
+                    </span>
+                  </template>
+                </el-dialog>
+                <el-dialog v-model="centerDialogVisible2" title="提示" width="30%" center>
+                  <el-form
+                    v-if="item.robot_class == dingtalk"
+                    ref="formRef3"
+                    :model="robot2"
+                    label-width="auto"
+                  >
+                    <el-form-item
+                      prop="robot_name"
+                      label="昵称"
+                      :rules="[{ required: true, message: '必填项' }]"
+                    >
+                      <el-input v-model="robot.robot_name" />
+                    </el-form-item>
+
+                    <el-form-item v-model="robot.switch" prop="switch" label="启用">
+                      <el-switch v-model="robot.switch" />
+                    </el-form-item>
+                    <el-form-item
+                      prop="accesstoken"
+                      label="token"
+                      :rules="[{ required: true, message: '必填项' }]"
+                    >
+                      <el-input v-model="robot.accesstoken" />
+                    </el-form-item>
+                    <el-form-item
+                      prop="secret"
+                      label="secret"
+                      :rules="[{ required: true, message: '必填项' }]"
+                    >
+                      <el-input v-model="robot.secret" />
+                    </el-form-item>
+                  </el-form>
+                  <el-button
+                    type="primary"
+                    @click="
+                      update_robot(item.robot_id, item.robot_class), (centerDialogVisible2 = false)
+                    "
+                    >更新</el-button
+                  >
+                  <template #footer>
+                    <span class="dialog-footer">
+                      <el-button @click="centerDialogVisible2 = false">取消</el-button>
+                      <el-button
+                        type="primary"
+                        @click="
+                          update_robot(item.robot_id, item.robot_class),
+                            (centerDialogVisible2 = false)
+                        "
+                        >更新</el-button
+                      >
                     </span>
                   </template>
                 </el-dialog>
@@ -92,42 +158,90 @@
           </div>
         </el-scrollbar>
       </el-card>
-      <!-- <el-card class="box-card2">
+      <el-card class="box-card4">
         <template #header>
           <div class="card-header">
-            <span> 消息模板更新/创建</span>
+            <span>robot列表/创建</span>
           </div>
-        </template> -->
-      <!-- <el-form  ref="formRef" :model="form" label-width="auto" >
-          <el-form-item prop="markdown"  label="md模板" :rules="[{ required: true, message: '必填项' }]">
-            <el-input  rows="10" v-model="form.markdown" type="textarea" />
+        </template>
+        <el-form ref="formRef" :model="form" label-width="auto">
+          <el-form-item
+            prop="robot_name"
+            label="昵称"
+            :rules="[{ required: true, message: '必填项' }]"
+          >
+            <el-input v-model="form.robot_name" />
+          </el-form-item>
+          <el-form-item
+            prop="robot_class"
+            label="类型"
+            :rules="[{ required: true, message: '必填项' }]"
+          >
+            <el-select v-model="form.robot_class" placeholder="请选择你的webhook类型">
+              <el-option label="钉钉" value="dingtalk" />
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="switch" label="启用">
+            <el-switch v-model="form.switch" />
+          </el-form-item>
+          <el-form-item
+            prop="accesstoken"
+            label="token"
+            :rules="[{ required: true, message: '必填项' }]"
+          >
+            <el-input v-model="form.accesstoken" type="textarea" />
+          </el-form-item>
+          <el-form-item prop="secret" label="密钥" :rules="[{ required: true, message: '必填项' }]">
+            <el-input v-model="form.secret" type="textarea" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="" style="margin-left:40% ;">提交</el-button>
+            <el-button type="primary" @click="onSubmit_robot_create" style="margin-left: 40%"
+              >创建</el-button
+            >
           </el-form-item>
-        </el-form> -->
-      <!-- </el-card> -->
+        </el-form>
+      </el-card>
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { ref, watch, onMounted, reactive, h, nextTick } from 'vue'
-import { getmarkdownbystatus2time, postcreaterobot, getrobots, delrobots } from '@/api/login'
-import { SelectMarkDownByStatus2Time, SelectRobot, Robot, DelRobot } from '@/api/login/types'
+import {
+  getmarkdownbystatus2time,
+  postcreaterobot,
+  getrobots,
+  delrobots,
+  updatemarktemplate,
+  getmarktemplate,
+  updaterobots
+} from '@/api/login'
+import {
+  SelectMarkDownByStatus2Time,
+  SelectRobot,
+  Robot,
+  DelRobot,
+  Updatemarkdowntemplate,
+  desc,
+  Selectmarkdowntemplate,
+  UpdateRobot
+} from '@/api/login/types'
 import { marked } from 'marked'
 import { useRouter } from 'vue-router'
 import { ElNotification } from 'element-plus'
 import type { FormInstance } from 'element-plus'
+const dingtalk = 'dingtalk'
 const centerDialogVisible = ref(false)
+const centerDialogVisible2 = ref(false)
 // 获取路由参数
 const route = useRoute()
 const niname = route.query.niname
 const receiver = route.query.receiver
 let state = route.query.state
 const formRef = ref<FormInstance>()
+const formRef2 = ref<FormInstance>()
+const formRef3 = ref<FormInstance>()
 // 获取今天的日期
 const today = new Date()
 
@@ -153,17 +267,17 @@ const activeNames_1 = ref(['1'])
 // 创建路由需要此作用域
 const router = useRouter()
 const reloadPage = (s: string) => {
- setTimeout(()=>{
-  router.replace({
-    path: '/alertmanger/status',
-    query: {
-      niname: niname as string,
-      receiver: receiver as string,
-      state: s as string,
-      date: new Date().getTime(),
-    }
-  })
- },650)
+  setTimeout(() => {
+    router.replace({
+      path: '/alertmanger/status',
+      query: {
+        niname: niname as string,
+        receiver: receiver as string,
+        state: s as string,
+        date: new Date().getTime()
+      }
+    })
+  }, 800)
 }
 
 // markdown转换
@@ -213,7 +327,6 @@ watch(value2, (newVal) => {
 
 //切换分类事件
 const changeAlertClass = () => {
-
   let s: string
   if ((state as string) == 'firing') {
     s = 'resolved'
@@ -223,7 +336,7 @@ const changeAlertClass = () => {
   reloadPage(s)
 }
 
-// 表单处理
+// 表单创建机器人
 const form = reactive({
   receiver: receiver as string,
   robot_name: '',
@@ -242,20 +355,23 @@ const onSubmit_robot_create = () => {
   var s: string = ''
   formRef.value?.validate((valid) => {
     if (valid) {
-      postcreaterobot(form).then((resp) => {
-        response_1.message = resp.data.message
-        response_1.status = resp.data.status
-        if (state as string == 'firing') {
-          s = 'firing'
-        } else {
-          s = 'resolved'
-        }
-      }).catch((error) => {
-        console.error('请求发生错误:', error)
-      }).finally(() => {
-        alert()
-        reloadPage(s)
-      })
+      postcreaterobot(form)
+        .then((resp) => {
+          response_1.message = resp.data.message
+          response_1.status = resp.data.status
+          if ((state as string) == 'firing') {
+            s = 'firing'
+          } else {
+            s = 'resolved'
+          }
+        })
+        .catch((error) => {
+          console.error('请求发生错误:', error)
+        })
+        .finally(() => {
+          alert()
+          reloadPage(s)
+        })
     }
   })
 }
@@ -267,14 +383,16 @@ const select_robots = () => {
   const select_robots_params: SelectRobot = {
     index: receiver as string
   }
-  getrobots(select_robots_params).then((resp) => {
-    // resp.data.robots.forEach((robot,i)=>{
-    //   collapseItems_robot[i]=robot
-    // })
-    collapseItems_robot.value = resp.data.robots
-  }).catch((error) => {
-    console.error('请求发生错误:', error)
-  })
+  getrobots(select_robots_params)
+    .then((resp) => {
+      // resp.data.robots.forEach((robot,i)=>{
+      //   collapseItems_robot[i]=robot
+      // })
+      collapseItems_robot.value = resp.data.robots
+    })
+    .catch((error) => {
+      console.error('请求发生错误:', error)
+    })
 }
 
 // 删除机器人
@@ -284,23 +402,125 @@ const del_robot = (id: number) => {
     index: receiver as string,
     robot_id: id
   }
-  delrobots(d).then((resp) => {
-    response_1.status = resp.data.status
-    response_1.message = resp.data.message
-    if (resp.code === 0) {
-      if (state as string == 'firing') {
-        s = 'firing'
-        alert()
-      } else {
-        s = 'resolved'
-        alert()
+  delrobots(d)
+    .then((resp) => {
+      response_1.status = resp.data.status
+      response_1.message = resp.data.message
+      if (resp.code === 0) {
+        if ((state as string) == 'firing') {
+          s = 'firing'
+          alert()
+        } else {
+          s = 'resolved'
+          alert()
+        }
+        reloadPage(s)
       }
-      reloadPage(s)
-    }
-  }).catch((error) => {
-    console.error('请求发生错误:', error)
-  })
+    })
+    .catch((error) => {
+      console.error('请求发生错误:', error)
+    })
+}
 
+// 更新机器人
+const robot: UpdateRobot = reactive({
+  robot_id: 0,
+  robot_name: '',
+  receiver: '',
+  robot_class: '',
+  switch: false,
+  accesstoken: '',
+  secret: ''
+})
+
+const robot2 = reactive({
+  robot_name: '',
+  switch: false,
+  accesstoken: '',
+  secret: ''
+})
+const update_robot = (id: number, c: string) => {
+  var s: string = ''
+  formRef3.value?.validate((valid) => {
+    debugger
+    console.log(valid)
+    if (valid) {
+      robot.robot_name = robot2.robot_name
+      robot.robot_id = id
+      robot.receiver = receiver as string
+      robot.accesstoken = robot2.accesstoken
+      robot.secret = robot2.secret
+      robot.robot_class = c
+      robot.switch = robot2.switch
+      updaterobots(robot)
+        .then((resp) => {
+          response_1.message = resp.data.message
+          response_1.status = resp.data.status
+          if ((state as string) == 'firing') {
+            s = 'firing'
+          } else {
+            s = 'resolved'
+          }
+        })
+        .catch((error) => {
+          console.error('请求发生错误:', error)
+        })
+        .finally(() => {
+          alert()
+          reloadPage(s)
+        })
+    }
+  })
+}
+
+// 更新模板
+const markdown_template_desc: desc = reactive({
+  maketime: '',
+  markdown: ''
+})
+
+const markdown_template: Updatemarkdowntemplate = reactive({
+  receiver: receiver as string,
+  desc: markdown_template_desc
+})
+
+const update_markdown = () => {
+  var s: string = ''
+  formRef2.value?.validate((valid) => {
+    if (valid) {
+      updatemarktemplate(markdown_template)
+        .then((resp) => {
+          response_1.message = resp.data.message
+          response_1.status = resp.data.status
+          if ((state as string) == 'firing') {
+            s = 'firing'
+          } else {
+            s = 'resolved'
+          }
+        })
+        .catch((error) => {
+          console.error('请求发生错误:', error)
+        })
+        .finally(() => {
+          alert()
+          reloadPage(s)
+        })
+    }
+  })
+}
+
+//查询模板
+const select_markdown = () => {
+  const select_robots_params: Selectmarkdowntemplate = {
+    index: receiver as string
+  }
+  getmarktemplate(select_robots_params)
+    .then((resp) => {
+      markdown_template_desc.markdown = resp.data.desc.markdown
+    })
+    .catch((error) => {
+      console.error('请求发生错误:', error)
+    })
 }
 
 // 弹窗消息
@@ -325,19 +545,16 @@ const alert = () => {
 
 // 在组件挂载时调用 getmarkdown，加载默认时间范围的数据
 onMounted(() => {
-  debugger
   const [start, end] = value2.value
   select_robots()
+  select_markdown()
   getmarkdown(receiver as string, state as string, start.toISOString(), end.toISOString())
-
 })
-
-
 </script>
 
 <style scoped>
 .container {
-  display: flex;
+  display: grid;
   flex-wrap: wrap;
   gap: 20px;
   /* 卡片之间的间距 */
@@ -345,8 +562,8 @@ onMounted(() => {
 }
 
 .card-container {
-  display: flex;
-  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   justify-content: space-between;
   /* 在容器内的卡片之间创建间距 */
   flex-wrap: wrap;
@@ -357,8 +574,8 @@ onMounted(() => {
 
 .box-card1,
 .box-card2,
-.box-card3 {
-  flex: 1 1 450px;
+.box-card3,
+.box-card4 {
   /* 卡片最小宽度为300px，根据需要调整 */
   max-width: 100%;
   box-sizing: border-box;
@@ -366,11 +583,23 @@ onMounted(() => {
 
 .box-card1 {
   height: 800px;
+  grid-row: span 2; /* 让第一卡片跨越两行 */
 }
 
-.box-card2,
+.box-card2 {
+  height: 800px;
+  grid-row: span 2;
+}
 .box-card3 {
+  height: 375px;
+  grid-column: 3; /* 指定位置在第二列 */
+  grid-row: 1;
+}
+
+.box-card4 {
   height: 400px;
+  grid-column: 3; /* 指定位置在第二列 */
+  grid-row: 2; /* 指定行在第二行 */
 }
 
 .button-container {

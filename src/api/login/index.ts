@@ -15,7 +15,13 @@ import type {
   SelectRobot,
   SelectRobot_response,
   DelRobot,
-  DelRobot_response
+  DelRobot_response,
+  Updatemarkdowntemplate,
+  Updatemarkdowntemplate_response,
+  Selectmarkdowntemplate,
+  Selectmarkdowntemplate_response,
+  UpdateRobot,
+  UpdateRobot_response
 } from './types'
 
 interface RoleParams {
@@ -72,20 +78,39 @@ export const getmarkdownbystatus2time = (
   return request.get({ url: '/alertmanger/markdownbystatus2mohu', params })
 }
 
-
 //创建机器人
 
-export const  postcreaterobot = (data:CreateRobot):Promise<IResponse<CreateRobot_response>> => {
+export const postcreaterobot = (data: CreateRobot): Promise<IResponse<CreateRobot_response>> => {
   return request.post({ url: '/alertmanger/post/newrobot', data })
 }
 
 // 查询机器人
 
-export const getrobots = (params:SelectRobot): Promise<IResponse<SelectRobot_response>> => {
-  return request.get({ url: '/alertmanger/robot' ,params})
+export const getrobots = (params: SelectRobot): Promise<IResponse<SelectRobot_response>> => {
+  return request.get({ url: '/alertmanger/robot', params })
 }
 
 // 删除机器人
-export const delrobots = (params:DelRobot): Promise<IResponse<DelRobot_response>> => {
-  return request.delete({ url: '/alertmanger/delrobot' ,params})
+export const delrobots = (params: DelRobot): Promise<IResponse<DelRobot_response>> => {
+  return request.delete({ url: '/alertmanger/delrobot', params })
+}
+
+// 更新机器人
+export const updaterobots = (data: UpdateRobot): Promise<IResponse<UpdateRobot_response>> => {
+  return request.post({ url: '/alertmanger/post/updaterobot', data })
+}
+
+// 更新markdown模板
+
+export const updatemarktemplate = (
+  data: Updatemarkdowntemplate
+): Promise<IResponse<Updatemarkdowntemplate_response>> => {
+  return request.post({ url: '/alertmanger/post/updatemarkdowntemplate', data })
+}
+
+// 查询模板
+export const getmarktemplate = (
+  params: Selectmarkdowntemplate
+): Promise<IResponse<Selectmarkdowntemplate_response>> => {
+  return request.get({ url: '/alertmanger/newmarkdowntemplate', params })
 }
