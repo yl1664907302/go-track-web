@@ -101,9 +101,10 @@
                 </el-dialog>
                 <el-dialog v-model="centerDialogVisible2" title="提示" width="30%" center>
                   <el-form
+                   ref="ruleFormRef"
+                   v-loading="loading"
                     v-if="item.robot_class == dingtalk"
-                    ref="formRef3"
-                    :model="robot2"
+                    :model="robot"
                     label-width="auto"
                   >
                     <el-form-item
@@ -132,20 +133,13 @@
                       <el-input v-model="robot.secret" />
                     </el-form-item>
                   </el-form>
-                  <el-button
-                    type="primary"
-                    @click="
-                      update_robot(item.robot_id, item.robot_class), (centerDialogVisible2 = false)
-                    "
-                    >更新</el-button
-                  >
                   <template #footer>
                     <span class="dialog-footer">
                       <el-button @click="centerDialogVisible2 = false">取消</el-button>
                       <el-button
                         type="primary"
                         @click="
-                          update_robot(item.robot_id, item.robot_class),
+                          update_robot(item.robot_id, item.robot_class,ruleFormRef),
                             (centerDialogVisible2 = false)
                         "
                         >更新</el-button
@@ -207,7 +201,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { ref, watch, onMounted, reactive, h, nextTick } from 'vue'
+import { ref, watch, onMounted, reactive, h } from 'vue'
 import {
   getmarkdownbystatus2time,
   postcreaterobot,
@@ -225,7 +219,6 @@ import {
   Updatemarkdowntemplate,
   desc,
   Selectmarkdowntemplate,
-  UpdateRobot
 } from '@/api/login/types'
 import { marked } from 'marked'
 import { useRouter } from 'vue-router'
@@ -234,6 +227,7 @@ import type { FormInstance } from 'element-plus'
 const dingtalk = 'dingtalk'
 const centerDialogVisible = ref(false)
 const centerDialogVisible2 = ref(false)
+const loading = ref(false)
 // 获取路由参数
 const route = useRoute()
 const niname = route.query.niname
@@ -241,7 +235,7 @@ const receiver = route.query.receiver
 let state = route.query.state
 const formRef = ref<FormInstance>()
 const formRef2 = ref<FormInstance>()
-const formRef3 = ref<FormInstance>()
+const ruleFormRef = ref<FormInstance>()
 // 获取今天的日期
 const today = new Date()
 
@@ -267,7 +261,9 @@ const activeNames_1 = ref(['1'])
 // 创建路由需要此作用域
 const router = useRouter()
 const reloadPage = (s: string) => {
+  // loading.value=!loading.value
   setTimeout(() => {
+    // loading.value=false
     router.replace({
       path: '/alertmanger/status',
       query: {
@@ -423,7 +419,7 @@ const del_robot = (id: number) => {
 }
 
 // 更新机器人
-const robot: UpdateRobot = reactive({
+const robot= reactive({
   robot_id: 0,
   robot_name: '',
   receiver: '',
@@ -433,25 +429,15 @@ const robot: UpdateRobot = reactive({
   secret: ''
 })
 
-const robot2 = reactive({
-  robot_name: '',
-  switch: false,
-  accesstoken: '',
-  secret: ''
-})
-const update_robot = (id: number, c: string) => {
+const update_robot =  async (id: number, c: string,formEl:FormInstance|undefined) => {
+  // debugger
+  // if (!formEl) return
   var s: string = ''
-  formRef3.value?.validate((valid) => {
-    debugger
-    console.log(valid)
-    if (valid) {
-      robot.robot_name = robot2.robot_name
+  // await formEl.validate((valid) => {
+  //   if (valid) {
       robot.robot_id = id
       robot.receiver = receiver as string
-      robot.accesstoken = robot2.accesstoken
-      robot.secret = robot2.secret
       robot.robot_class = c
-      robot.switch = robot2.switch
       updaterobots(robot)
         .then((resp) => {
           response_1.message = resp.data.message
@@ -466,12 +452,15 @@ const update_robot = (id: number, c: string) => {
           console.error('请求发生错误:', error)
         })
         .finally(() => {
+          loading.value=true
+          // setTimeout(()=>{
+          //   loading.value=false
+          // },800)
           alert()
           reloadPage(s)
         })
     }
-  })
-}
+// }
 
 // 更新模板
 const markdown_template_desc: desc = reactive({
